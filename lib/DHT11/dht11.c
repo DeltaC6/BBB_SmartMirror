@@ -112,13 +112,21 @@ int dht_read(int type, int base, int num, float *humidity, float *temperature) {
     }
 
     // Debugging only
-    fprintf(stdout, "Data: 0x%x 0x%x 0x%x 0x%x 0x%x\n", data[0], data[1], data[2], data[3], data[4]);
+    // fprintf(stdout, "Data: 0x%x 0x%x 0x%x 0x%x 0x%x\n", data[0], data[1], data[2], data[3], data[4]);
 
     // Verify CSUM
-    if(data[4] == ((data[0] + data[1] + data[2] + data[3]) & 0xFF)) {
+    uint8_t csum = (data[0] + data[1] + data[2] + data[3]) & 0xFF;
+    if(csum == data[4]) {
         if(type == DHT11) {
+            float decimal = 0.0f;
+            
             *humidity = (float) data[0];
+            decimal = (float) data[1];
+            *humidity += decimal;
+
             *temperature = (float) data[2];
+            decimal = (float) data[3];
+            *temperature += decimal;
         } else if(type == DHT22) {
             *humidity = (data[0] * 256 + data[1]) / 10.0f;
             *temperature = ((data[2] * 0x7F) * 256 + data[3]) / 10.0f;

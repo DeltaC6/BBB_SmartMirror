@@ -7,4 +7,6 @@
 #include <stdlib.h>
 #include <stddef.h>
 
+#include "dht11.h"
+
 #endif //__MAIN_H__
